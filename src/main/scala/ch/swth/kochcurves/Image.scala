@@ -18,7 +18,7 @@ class Image(w: Int, h: Int, c: Color, s: List[List[Color]]) {
   private val color = c
 
   // the screen represents the pixel matrix of the image
-  private val screen = s
+  val screen = s
 
   def this(width: Int, height: Int, color: Color) = this(width, height, color, List.fill(height)(List.fill(width)(color)))
 
@@ -53,7 +53,7 @@ class Image(w: Int, h: Int, c: Color, s: List[List[Color]]) {
       * @param x  the x-coordinate of the line
       * @return   the y-coordinate
       */
-    def y(x: Int): Int = y2 * x - y2 * x1 - y1 * x + y1 * x2 / (x2 - x1)
+    def y(x: Int): Int = (y2 * x - y2 * x1 - y1 * x + y1 * x2) / (x2 - x1)
 
     /**
       * Returns a new Image with its screen enhanced by another pixel of the specified color, thereby checking the length of the current row and starting a new row
@@ -88,7 +88,7 @@ class Image(w: Int, h: Int, c: Color, s: List[List[Color]]) {
       // The y-coordinate of the actual pixel
       def actualY = image.screen.size - 1
 
-      if (image.screen.size == this.screen.size)
+      if (image.screen.size == screen.size && image.screen.last.size == screen.last.size)
         image
       else if (actualX >= x1 && actualX <= x2 && isPixelOnLine(actualX))
         buildScreen(append(image, color))
