@@ -30,7 +30,7 @@ class Image(w: Int, h: Int, c: Color, s: List[List[Color]]) {
         new Image(image.screen ::: List(color :: Nil), this.color)
 
     def buildScreen(image: Image): Image = {
-      def isPixelOnLine(x: Int): Boolean = y(x) == image.screen.size - 1
+      def isPixelOnLine(x: Int): Boolean = y(x) == actualY
 
       def colorOfPixelInOriginalImage = if (image.screen.last.size < width) screen(actualY)(actualX) else screen(image.screen.size)(actualX)
 
