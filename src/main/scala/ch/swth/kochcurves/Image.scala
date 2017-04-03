@@ -98,5 +98,4 @@ class Image(w: Int, h: Int, c: Color, s: List[List[Color]]) {
 
     buildScreen(new Image(this.color))
   }
-
 }
