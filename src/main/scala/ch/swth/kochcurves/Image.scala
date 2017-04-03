@@ -23,34 +23,31 @@ class Image(w: Int, h: Int, c: Color, s: List[List[Color]]) {
   def line(x1: Int, y1: Int, x2: Int, y2: Int, color: Color): Image = {
     def yValue: (Int, Int) => (Int) = y2 * _ - y2 * x1 - y1 * _ + y1 * x2 / (x2 - x1)
 
-    def appendRow(image: Image, color: Color) = new Image(image.screen.init ::: List(image.screen.last ::: color :: Nil), this.color)
+    def append(image: Image, color: Color) =
+      if (image.screen.last.size < width)
+        new Image(image.screen.init ::: List(image.screen.last ::: color :: Nil), this.color)
+      else
+        new Image(image.screen ::: List(color :: Nil), this.color)
 
-    def newRow(image: Image, color: Color) = new Image(image.screen ::: List(color :: Nil), this.color)
+    def buildScreen(image: Image): Image = {
+      def isPointMemberOfLine(x: Int): Boolean = yValue(x, x) == image.screen.size - 1
 
-    def buildScreen(image: Image, position: Int): Image = {
-      def isPointMemberOfLine(x: Int) : Boolean = yValue(x, x) == image.screen.size - 1
+      def colorOfPixelinOriginalImage = if (image.screen.last.size < width) screen(actualYPosition)(actualXPosition) else screen(image.screen.size)(actualXPosition)
 
-      def colorOfPixelinOriginalImage = screen(image.screen.size - 1)(position)
+      def actualXPosition = if (image.screen.last.size < width) image.screen.last.size else 1
 
-      if (image.screen.size < this.screen.size) {
-        if (position >= x1 && position <= x2 && isPointMemberOfLine(position))
-          if (position < width && position != 0)
-            buildScreen(appendRow(image, color), position + 1)
-          else
-            buildScreen(appendRow(image, color), 1)
-        else if (position < width && position != 0)
-          buildScreen(appendRow(image, colorOfPixelinOriginalImage), position + 1)
+      def actualYPosition = image.screen.size - 1
+
+      if (image.screen.size == this.screen.size)
+        image
+      else {
+        if (actualXPosition >= x1 && actualXPosition <= x2 && isPointMemberOfLine(actualXPosition))
+          buildScreen(append(image, color))
         else
-          buildScreen(newRow(image, screen(image.screen.size)(0)), 1)
-      } else if (yValue(position, position) == image.screen.size - 1)
-        buildScreen(newRow(image, color), 1)
-      else if (position < width && position >= x1 && position <= x2 && isPointMemberOfLine(position))
-          buildScreen(appendRow(image, color), position + 1)
-      else if (position < width)
-        buildScreen(appendRow(image, colorOfPixelinOriginalImage), position + 1)
-      else image
+          buildScreen(append(image, colorOfPixelinOriginalImage))
+      }
     }
 
-    buildScreen(new Image(this.color), 0)
+    buildScreen(new Image(this.color))
   }
 }
